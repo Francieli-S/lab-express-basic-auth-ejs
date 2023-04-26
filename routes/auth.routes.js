@@ -21,10 +21,8 @@ router.post("/signup", async (req, res, next) => {
     if (!identifyUser) {
       const salt = bcryptjs.genSaltSync(saltRounds);
       const encryptedPass = bcryptjs.hashSync(req.body.password, salt);
-      const newUser = await User.create({
-        username: req.body.username,
-        encryptedPass,
-      });
+
+      await User.create({ username: req.body.username, encryptedPass });
       res.redirect("/auth/login");
     } else {
       res.render("auth/signup", {
@@ -46,11 +44,10 @@ router.get("/login", (req, res, next) => {
 router.post("/login", async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username });
-    console.log(req.session);
-    console.log(user);
+    console.log("here:", user);
     if (!!user) {
       if (bcryptjs.compareSync(req.body.password, user.encryptedPass)) {
-        req.session.user = { username: user.username };
+        //req.session.user = { username: user.username };
         res.redirect("/aplication");
       } else {
         res.render("auth/login", { errorMessage: "Incorrect password" });
